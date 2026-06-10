@@ -48,3 +48,10 @@ terraform.rc
 .env.local
 src/lambda/cost/cost.zip
 src/lambda/cost/placeholder.py
+
+# AWS credentials
+.aws/
+
+# Python cache
+**/__pycache__/
+*.pyc
