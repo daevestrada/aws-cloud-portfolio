@@ -46,3 +46,5 @@ terraform.rc
 # Variables de entorno y llaves secretas
 .env
 .env.local
+src/lambda/cost/cost.zip
+src/lambda/cost/placeholder.py

@@ -19,3 +19,9 @@ variable "acm_certificate_arn" {
   description = "ACM certificate ARN in us-east-1"
   type        = string
 }
+
+variable "lambda_zip_path" {
+  description = "Path to the Lambda deployment zip file"
+  type        = string
+  default     = "../../src/lambda/cost/cost.zip"
+}
