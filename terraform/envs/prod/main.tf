@@ -5,6 +5,7 @@ module "static_site" {
   environment         = var.environment
   domain_name         = var.domain_name
   acm_certificate_arn = var.acm_certificate_arn
+  api_gateway_url     = module.http_api.api_endpoint
 }
 
 module "http_api" {
