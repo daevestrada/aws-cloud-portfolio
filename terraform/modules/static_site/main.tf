@@ -65,12 +65,35 @@ resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
-  aliases             = [var.domain_name]
+  aliases             = [var.domain_name, "www.${var.domain_name}"]
 
   origin {
     domain_name              = aws_s3_bucket.site.bucket_regional_domain_name
     origin_id                = "s3-${aws_s3_bucket.site.id}"
     origin_access_control_id = aws_cloudfront_origin_access_control.site.id
+  }
+
+  origin {
+    domain_name = replace(var.api_gateway_url, "/^https?://([^/]*).*/", "$1")
+    origin_id   = "apigw-cost"
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern           = "/api/*"
+    target_origin_id       = "apigw-cost"
+    viewer_protocol_policy = "https-only"
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
+
+    cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # CachingDisabled
+    origin_request_policy_id = "b689b0a8-53d0-40ab-baf2-68738e2966ac" # AllViewerExceptHostHeader
   }
 
   default_cache_behavior {

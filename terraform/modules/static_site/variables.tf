@@ -18,3 +18,8 @@ variable "acm_certificate_arn" {
   description = "ARN of the ACM certificate in us-east-1 for the domain"
   type        = string
 }
+
+variable "api_gateway_url" {
+  description = "API Gateway HTTP API invoke URL — used as CloudFront origin for /api/* path"
+  type        = string
+}
