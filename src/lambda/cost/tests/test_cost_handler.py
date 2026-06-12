@@ -73,6 +73,43 @@ class TestCostHandler(unittest.TestCase):
         response = lambda_handler(make_event(), {})
         self.assertEqual(response["statusCode"], 500)
 
+    @patch("lambda_function.boto3.client")
+    def test_negligible_amounts_filtered_out(self, mock_boto):
+        ce = MagicMock()
+        mock_boto.return_value = ce
+        ce.get_cost_and_usage.side_effect = [
+            {
+                "ResultsByTime": [
+                    {
+                        "TimePeriod": {"Start": "2026-06-01"},
+                        "Groups": [
+                            {
+                                "Keys": ["Amazon S3"],
+                                "Metrics": {"UnblendedCost": {"Amount": "1e-10"}},
+                            },
+                            {
+                                "Keys": ["Amazon Route 53"],
+                                "Metrics": {"UnblendedCost": {"Amount": "0.50"}},
+                            },
+                        ],
+                    }
+                ]
+            },
+            {
+                "ResultsByTime": [
+                    {
+                        "Total": {"UnblendedCost": {"Amount": "0.50"}},
+                        "Groups": [],
+                    }
+                ]
+            },
+        ]
+        response = lambda_handler(make_event(), {})
+        body = json.loads(response["body"])
+        services = [row["service"] for row in body["daily_costs"]]
+        self.assertNotIn("Amazon S3", services)
+        self.assertIn("Amazon Route 53", services)
+
     def test_options_request_returns_200(self):
         response = lambda_handler(make_event("OPTIONS"), {})
         self.assertEqual(response["statusCode"], 200)
