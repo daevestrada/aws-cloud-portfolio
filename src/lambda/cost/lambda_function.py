@@ -33,7 +33,7 @@ def get_cost_data(ce_client):
     for result in response["ResultsByTime"]:
         for group in result["Groups"]:
             amount = float(group["Metrics"]["UnblendedCost"]["Amount"])
-            if amount > 0:
+            if amount > 0.0001:
                 daily_costs.append({
                     "date": result["TimePeriod"]["Start"],
                     "service": group["Keys"][0],
