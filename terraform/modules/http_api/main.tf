@@ -45,19 +45,23 @@ resource "aws_cloudwatch_log_group" "lambda_cost" {
 
 # ── Lambda Function ───────────────────────────────────────────────────────────
 resource "aws_lambda_function" "cost" {
-  function_name = "${var.project_name}-${var.environment}-cost"
-  role          = aws_iam_role.lambda_exec.arn
-  handler       = "lambda_function.lambda_handler"
-  runtime       = "python3.12"
-  architectures = ["arm64"]
-  timeout       = 10
-  memory_size   = 128
-  filename      = var.lambda_zip_path
-  source_code_hash = filebase64sha256(var.lambda_zip_path)  # add this line	
+  function_name     = "${var.project_name}-${var.environment}-cost"
+  role               = aws_iam_role.lambda_exec.arn
+  handler            = "lambda_function.lambda_handler"
+  runtime            = "python3.12"
+  architectures      = ["arm64"]
+  timeout            = 10
+  memory_size        = 128
+  filename           = var.lambda_zip_path
+  source_code_hash   = filebase64sha256(var.lambda_zip_path)
 
   environment {
     variables = {
-      LOG_LEVEL = "INFO"
+      LOG_LEVEL                 = "INFO"
+      CORS_ORIGIN               = var.cors_origin
+      CREDIT_BASELINE_REMAINING = tostring(var.credit_baseline_remaining)
+      CREDIT_BASELINE_DATE      = var.credit_baseline_date
+      CREDIT_EXPIRATION_DATE    = var.credit_expiration_date
     }
   }
 
@@ -103,4 +107,3 @@ resource "aws_lambda_permission" "apigw" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.cost.execution_arn}/*/*"
 }
-
