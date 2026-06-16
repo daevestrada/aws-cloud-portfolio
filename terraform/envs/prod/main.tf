@@ -11,7 +11,10 @@ module "static_site" {
 module "http_api" {
   source = "../../modules/http_api"
 
-  project_name    = var.project_name
-  environment     = var.environment
-  lambda_zip_path = var.lambda_zip_path
+  project_name              = var.project_name
+  environment               = var.environment
+  lambda_zip_path           = var.lambda_zip_path
+  credit_baseline_remaining = var.credit_baseline_remaining
+  credit_baseline_date      = var.credit_baseline_date
+  credit_expiration_date    = var.credit_expiration_date
 }

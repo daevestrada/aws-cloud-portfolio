@@ -1,53 +1,71 @@
 const API_URL = '/api/cost';
 
+function formatUSD(value, decimals = 4) {
+  const num = Number(value) || 0;
+  const fixed = num.toFixed(decimals);
+  // avoid an ugly "-0.0000" caused by floating-point noise around zero
+  return fixed === `-${(0).toFixed(decimals)}` ? (0).toFixed(decimals) : fixed;
+}
+
+function formatDate(isoDate) {
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 async function loadCosts() {
-  const tbody = document.getElementById('daily-table');
-  const mtdEl = document.getElementById('mtd-total');
-  const activeDaysEl = document.getElementById('active-days');
+  const grossEl = document.getElementById('gross-total');
+  const creditsAppliedEl = document.getElementById('credits-applied');
+  const netEl = document.getElementById('net-total');
+  const remainingEl = document.getElementById('credits-remaining');
+  const expirationEl = document.getElementById('days-until-expiration');
+  const expirationSubEl = document.getElementById('expiration-date');
+  const periodEl = document.getElementById('period-label');
   const lastUpdatedEl = document.getElementById('last-updated');
-  const mtdMonthEl = document.getElementById('mtd-month');
+  const tbody = document.getElementById('services-table');
 
   try {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    // MTD total
-    mtdEl.textContent = `$${data.mtd_total.toFixed(4)}`;
+    grossEl.textContent = `$${formatUSD(data.gross_total_mtd)}`;
+    creditsAppliedEl.textContent = `-$${formatUSD(Math.abs(data.credits_applied_mtd))}`;
+    netEl.textContent = `$${formatUSD(data.net_total_mtd)}`;
+    remainingEl.textContent = `$${formatUSD(data.credits_remaining, 2)}`;
+    expirationEl.textContent = `${data.days_until_expiration} days`;
+    expirationSubEl.textContent = `until ${formatDate(data.credit_expiration_date)}`;
 
-    // Month label
-    const now = new Date();
-    mtdMonthEl.textContent = now.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    const periodStart = new Date(`${data.period_start}T00:00:00`);
+    periodEl.textContent = periodStart.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
-    // Active days count
-    const activeDays = data.daily_costs.filter(r => parseFloat(r.amount) > 0).length;
-    activeDaysEl.textContent = activeDays;
-
-    // Last updated
     lastUpdatedEl.textContent = `updated ${new Date().toLocaleTimeString()}`;
 
-    // Daily table
-    if (data.daily_costs.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" class="status">No cost data available.</td></tr>';
+    if (!data.services || data.services.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="2" class="status">No service costs recorded yet this period.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = data.daily_costs
+    tbody.innerHTML = data.services
       .map(row => `
         <tr>
-          <td>${row.date}</td>
           <td>${row.service}</td>
-          <td class="amount">$${parseFloat(row.amount).toFixed(4)}</td>
+          <td class="amount">$${formatUSD(row.gross_cost)}</td>
         </tr>`)
       .join('');
 
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="3" class="status error">Failed to load cost data: ${err.message}</td></tr>`;
-    mtdEl.textContent = '—';
+    tbody.innerHTML = `<tr><td colspan="2" class="status error">Failed to load cost data: ${err.message}</td></tr>`;
+    grossEl.textContent = '—';
+    creditsAppliedEl.textContent = '—';
+    netEl.textContent = '—';
+    remainingEl.textContent = '—';
+    expirationEl.textContent = '—';
     lastUpdatedEl.textContent = 'error';
     console.error('Cost API error:', err);
   }
 }
 
 loadCosts();
-
