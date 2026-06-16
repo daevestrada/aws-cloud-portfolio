@@ -5,7 +5,7 @@ terraform {
     bucket         = "tfstate-309615787255"
     key            = "prod/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "tfstate-locks"  # use_lockfile is still experimental — keeping dynamodb_table
+    dynamodb_table = "tfstate-locks" # use_lockfile is still experimental — keeping dynamodb_table
     encrypt        = true
   }
 

@@ -16,8 +16,8 @@
     }
 
     header {
-      max-width: 900px;
-      margin: 0 auto 2rem;
+      max-width: 960px;
+      margin: 0 auto 1.5rem;
     }
 
     header h1 {
@@ -32,11 +32,19 @@
       margin-top: 0.25rem;
     }
 
+    .note {
+      max-width: 960px;
+      margin: 0 auto 1.5rem;
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
     .cards {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto 2rem;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
     }
 
@@ -56,10 +64,12 @@
     }
 
     .card .value {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 700;
       color: #38bdf8;
     }
+
+    .card .value.credit { color: #4ade80; }
 
     .card .sub {
       font-size: 0.75rem;
@@ -68,7 +78,7 @@
     }
 
     .section {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto 2rem;
     }
 
@@ -130,31 +140,51 @@
     <p>Live spend data from AWS Cost Explorer — <span id="last-updated">loading...</span></p>
   </header>
 
+  <p class="note">
+    Gross spend reflects what each AWS service actually cost before credits.
+    Net spend is what's left to pay after AWS promotional credits are applied —
+    currently $0 while credits last.
+  </p>
+
   <div class="cards">
     <div class="card">
-      <div class="label">Month-to-Date Total</div>
-      <div class="value" id="mtd-total">—</div>
-      <div class="sub" id="mtd-month"></div>
+      <div class="label">Gross Spend</div>
+      <div class="value" id="gross-total">—</div>
+      <div class="sub" id="period-label"></div>
     </div>
     <div class="card">
-      <div class="label">Days with Activity</div>
-      <div class="value" id="active-days">—</div>
-      <div class="sub">services with non-zero spend</div>
+      <div class="label">Credits Applied</div>
+      <div class="value credit" id="credits-applied">—</div>
+      <div class="sub">covered by AWS credits</div>
+    </div>
+    <div class="card">
+      <div class="label">Net Spend</div>
+      <div class="value" id="net-total">—</div>
+      <div class="sub">what's actually owed</div>
+    </div>
+    <div class="card">
+      <div class="label">Credits Remaining</div>
+      <div class="value credit" id="credits-remaining">—</div>
+      <div class="sub">calculated balance</div>
+    </div>
+    <div class="card">
+      <div class="label">Credits Expire In</div>
+      <div class="value" id="days-until-expiration">—</div>
+      <div class="sub" id="expiration-date"></div>
     </div>
   </div>
 
   <div class="section">
-    <h2>Daily Breakdown</h2>
+    <h2>Services Used This Month</h2>
     <table>
       <thead>
         <tr>
-          <th>Date</th>
           <th>Service</th>
-          <th>Amount (USD)</th>
+          <th>Gross Cost (USD)</th>
         </tr>
       </thead>
-      <tbody id="daily-table">
-        <tr><td colspan="3" class="status">Loading...</td></tr>
+      <tbody id="services-table">
+        <tr><td colspan="2" class="status">Loading...</td></tr>
       </tbody>
     </table>
   </div>
@@ -162,4 +192,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
