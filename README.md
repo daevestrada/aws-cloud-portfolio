@@ -2,7 +2,6 @@
 
 Live infrastructure I'm building and documenting while transitioning into cloud and DevOps engineering. Everything here is provisioned with Terraform, deployed without static AWS credentials, and tested before being called done.
 
-**Background:** 15+ years leading industrial infrastructure projects (PMP certified, $15M+ CAPEX managed) plus a recent Data Science specialization. This repo is the proof-of-work for the cloud/DevOps transition — each project is live, has a real URL, and this README explains what broke and why, not just what works.
 
 ## Live Projects
 
@@ -19,6 +18,9 @@ This README covers Project 1 in detail. Projects 2 and 3 will get their own sect
 ### What it does and why
 
 A live dashboard that queries my own AWS Cost Explorer data and shows gross spend, credits applied, net spend, remaining promotional credit balance, and a per-service breakdown for the current month. I built this first because cost awareness seemed like the most important habit to establish before building anything else on a credit-funded AWS account.
+
+![AWS Cost Dashboard — live screenshot](docs/images/cost-dashboard.png)
+
 
 ### Architecture
 
